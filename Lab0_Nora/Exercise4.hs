@@ -27,14 +27,21 @@ unique :: [Integer] -> Bool
 unique [] = True
 unique (x:y) = notElem x y && unique y
 
+-- This generator is used to generate numbers greater than or equal to 0, and that
+-- are no multiple of 10, in order to test the reversal function accurately.
+posGen :: Gen Integer
+posGen = suchThat (arbitrary :: Gen Integer) (\ x -> (x >= 0) && (rem x 10 /= 0))
+
 -- The reversal function does not work on negative numbers or numbers ending on a 0.
 -- That is why I filter out those numbers when testing the reversal function. I feel
 -- like ignoring these numbers is OK since none of these numbers are prime.
-prop_1 x = if (x >= 0) && (rem x 10 /= 0) then reversal (reversal x) == x else True
+prop_1 x = reversal (reversal x) == x
 
 -- For the prime membership property, I simply check whether all elements in the
 -- list are prime.
 prop_3 = all prime reversibleStream
+
+-- prop_5 x = if (elem x reversibleStream) then (elem (reversal x) reversibleStream) else True
 
 -- For the uniqueness property, I use the unique function defined above to check
 -- whether all elements in the list are unique.
@@ -42,3 +49,10 @@ prop_6 = unique reversibleStream
 
 -- For the final property, I check if all elements in the list are below 10000.
 prop_7 = all (< 10000) reversibleStream
+
+main :: IO ()
+main = do
+    quickCheck $ forAll posGen $ prop_1
+    quickCheck prop_3
+    quickCheck prop_6
+    quickCheck prop_7
