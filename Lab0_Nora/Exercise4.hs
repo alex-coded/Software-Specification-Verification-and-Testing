@@ -16,6 +16,11 @@ reversal = read . reverse . show
 reversibleStream :: [Integer]
 reversibleStream = filter (\ x -> prime (reversal x)) (takeWhile (<10000) primes)
 
-prop_1 x = reversal (reversal x) == x
+unique :: [Integer] -> Bool
+unique [] = True
+unique (x:y) = notElem x y && unique y
+
+prop_1 x = (x >= 0) && reversal (reversal x) == x
 prop_3 = all prime reversibleStream
+prop_6 = unique reversibleStream
 prop_7 = all (< 10000) reversibleStream

@@ -5,7 +5,7 @@ import Test.QuickCheck
 
 squares :: Int -> Int
 squares 1 = 1
-squares n = n^2 + (squares $! (n - 1))
+squares n = n^2 + (squares (n - 1))
 
 eq1 :: Int-> Int
 eq1 n = n * (n+1) * (div (2*n+1) 6)
