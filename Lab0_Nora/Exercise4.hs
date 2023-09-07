@@ -13,15 +13,15 @@ primes = 2 : filter prime [3..]
 reversal :: Integer -> Integer
 reversal = read . reverse . show
 
--- Here, I take numbers from the primes stream, as long as they are less than 10000.
--- From these numbers, I filter out the numbers of which the reverse is not prime.
+-- Here, we take numbers from the primes stream, as long as they are less than 10000.
+-- From these numbers, we filter out the numbers of which the reverse is not prime.
 -- So the resulting list only contains prime numbers under 10000 of which the reverse
 -- is also prime.
 reversibleStream :: [Integer]
 reversibleStream = filter (\ x -> prime (reversal x)) (takeWhile (<10000) primes)
 
 -- This function determines if all elements in a list are unique, used for property 6.
--- I recursively check for every element if they are also present in the rest of the list.
+-- We recursively check for every element if they are also present in the rest of the list.
 -- By using the && operator, every element has to be unique for the result to be True.
 unique :: [Integer] -> Bool
 unique [] = True
@@ -33,21 +33,21 @@ posGen :: Gen Integer
 posGen = suchThat (arbitrary :: Gen Integer) (\ x -> (x >= 0) && (rem x 10 /= 0))
 
 -- The reversal function does not work on negative numbers or numbers ending on a 0.
--- That is why I filter out those numbers when testing the reversal function. I feel
+-- That is why we filter out those numbers when testing the reversal function. We feel
 -- like ignoring these numbers is OK since none of these numbers are prime.
 prop_1 x = reversal (reversal x) == x
 
--- For the prime membership property, I simply check whether all elements in the
+-- For the prime membership property, we simply check whether all elements in the
 -- list are prime.
 prop_3 = all prime reversibleStream
 
 -- prop_5 x = if (elem x reversibleStream) then (elem (reversal x) reversibleStream) else True
 
--- For the uniqueness property, I use the unique function defined above to check
+-- For the uniqueness property, we use the unique function defined above to check
 -- whether all elements in the list are unique.
 prop_6 = unique reversibleStream
 
--- For the final property, I check if all elements in the list are below 10000.
+-- For the final property, we check if all elements in the list are below 10000.
 prop_7 = all (< 10000) reversibleStream
 
 main :: IO ()
