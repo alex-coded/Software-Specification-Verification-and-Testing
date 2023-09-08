@@ -1,3 +1,9 @@
+-- Names: Alexandra Volentir, Dasha Protsenko, Nora Silven, Shuqi Yi.
+-- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
+-- Study: MSc Software Engineering.
+-- This program is intended to implement and test two equations.
+-- Time spend: 2 hours
+
 import Data.List
 import Data.Char
 import System.Random

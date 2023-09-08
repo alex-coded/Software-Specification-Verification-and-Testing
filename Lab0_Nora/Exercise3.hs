@@ -1,3 +1,10 @@
+-- Names: Alexandra Volentir, Dasha Protsenko, Nora Silven, Shuqi Yi.
+-- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
+-- Study: MSc Software Engineering.
+-- This program is intended to implement and test a function to classify a triple
+-- of lengths as a type of triangle.
+-- Time spend: 2 hours
+
 import Data.List
 import Data.Char
 import System.Random
@@ -48,14 +55,15 @@ triangle a b c | any (<= 0) [a, b, c] = NoTriangle
 -- Due to time constraints, we only performed manual unit tests to check the triangle
 -- function. We checked one testcase for each outcome option, except 2 testcases for NoTriangle.
 -- For each outcome, the following lengths were used to test:
--- NoTriangle: (-1) 2 3 and 4 9 100
--- Rectangular: 3 4 5
--- Equilateral: 4 4 4
--- Isosceles: 8 8 10
--- Other: 5 6 8
+-- NoTriangle: (-1) 2 3 and 4 9 100 (Negative number and impossible combination of lengths)
+-- Rectangular: 3 4 5 (3^2 + 4^2 = 5^2)
+-- Equilateral: 4 4 4 (Three equal lengths)
+-- Isosceles: 8 8 10 (Two equal lengths and a different third length)
+-- Other: 5 6 8 (Combination of lengths that does not fit the properties of a
+-- special triangle, but is a triangle nonetheless)
 -- All these tests pass. However, this does not prove anything since this way of testing
 -- does not cover a lot of base at all. A better way of testing would be to make generators
--- for every type of triangle and perform quickchecks of the triangle function using those
+-- for every type of triangle (including NoTriangle) and perform quickchecks of the triangle function using those
 -- generators. This would still not be solid proof, but the outcome of such tests would be
 -- much more meaningful.
 main :: IO ()
