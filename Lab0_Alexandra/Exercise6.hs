@@ -1,3 +1,9 @@
+-- Names: Alexandra Volentir, Daria Protsenko, Nora Silven, Shuqi Yi.
+-- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
+-- Study: MSc Software Engineering.
+-- This program is intended to implement and test a function that would yield the least possible prime that is also a 
+-- sum of smaller primes
+-- Time spent: 1h 35 min 
 
 
 import Data.Numbers.Primes (primes, isPrime)
@@ -22,18 +28,18 @@ Used the library primes (Data.Numbers.Primes) for getting the list of primes and
 for testing our sum and the other primes for this property. 
 
 
------Code description (purpose, features, arhitecture)-----
-Our approach of finding the smallest possible number that is also the sum of n (101) consecurive primes
-lies in summing up the first n primes, beginning with current prime. As per se, the main logic is in the
+-----Code description (purpose, features, architecture)-----
+Our approach to finding the smallest possible number which is also the sum of n (101) consecutive primes
+lies in summing up the first n primes, beginning with the current prime. As per se, the main logic is in the
 function findSmallestPrime, where we sum up the primes until we get a sum that is also prime. 
 Until we find the solution, we search recursively by calling the function for the list of prime numbers (Primes library).
-In short, we search in a systematic approach the primes sum, until we get to the desired results
+In short, we search in a systematic approach for the primes sum, until we get the desired results
 that meets the criteria.
 
 
 ------Testing approach------
 
-We could do the testing approach by checking with a personal function if the criteria is respected (for the adding numbers,
+We could do the testing approach by checking with a personal function if the criteria are respected (for the adding numbers,
 as well as the sum):
 
 
@@ -45,7 +51,7 @@ myIsPrime n
         upperBound = floor (sqrt (fromIntegral n))
 
 
-On another note, we do not need to prove that the number is the smalles we could get,
+On another note, we do not need to prove that the number is the smallest we could get,
 because as per se, the further we go into the sum of the primes list with our verification, 
 the bigger the sum is. By their nature, the prime numbers become less frequent and larger when you 
 go further down the list. By this, I can say that the code is a practical solution to the given problem
