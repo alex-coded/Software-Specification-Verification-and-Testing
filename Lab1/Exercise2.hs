@@ -17,6 +17,7 @@ my_subsequences (h:t) = [h:ps | ps <- my_subsequences t] ++ my_subsequences t
 posGen :: Gen Integer
 posGen = suchThat (arbitrary :: Gen Integer) (>= 1)
 
+-- To prove that these statements are true, we use induction.
 prop_eq1 = length (my_subsequences []) == 1
 
 prop_eq2 :: Integer -> Bool
