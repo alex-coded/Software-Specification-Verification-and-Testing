@@ -19,10 +19,13 @@ check_isPermutation :: Eq a => [a] -> [a] -> Bool
 check_isPermutation x y | (length x /= length y) = False
                         | otherwise = all (\item -> elem item x) y && all (\item -> elem item y) x
 
-posGen :: Gen [Integer]
-posGen = suchThat (arbitrary :: Gen [Integer])
+posGen :: Gen Integer
+posGen = suchThat (arbitrary :: Gen Integer) (>= 0)
 
-prop_eq x y = isPermutation x y == check_isPermutation x y
+-- listGen :: Gen [Integer]
+-- listGen = vectorOf posGen (arbitrary :: Gen Integer)
+
+prop_eq x y = (isPermutation x y) == (check_isPermutation x y)
 
 main :: IO ()
 main = do
