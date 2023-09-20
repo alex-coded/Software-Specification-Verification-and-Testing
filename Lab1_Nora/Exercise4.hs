@@ -25,7 +25,6 @@ isDerangement [] [] = True
 isDerangement [] x = False
 isDerangement x y | length x /= length y = False
                   | otherwise = all (\ z -> (elem z x) && (elem z y) && ((elemIndex z x) /= (elemIndex z y))) x
--- (elem x (permutations y)) && (all (\ z -> (elemIndex z x) /= (elemIndex z y)) x)
 
 -- This function creates a list of all derangements of a list [0..n-1] by generating
 -- the list of all permutations and filtering out all lists that are not derangements.
@@ -38,47 +37,54 @@ deran n = filter (\ x -> isDerangement [0..n-1] x) (permutations [0..n-1])
 nonderan:: Int -> [[Int]]
 nonderan n = filter (\ x -> (isDerangement [0..n-1] x) == False) (permutations [0..n-1])
 
--- This generator generates an int between 1 and 7, used as a list size parameter
--- for testing. We restrict the size to be between 1 and 7 for efficiency reasons.
-sizeGen :: Gen Int
-sizeGen = suchThat (arbitrary :: Gen Int) (\ x -> (x > 1) && (x < 7))
-
 -- Since the empty list is a derangement of itself, the result of isDerangement
 -- on two empty lists should always be true.
+prop_empty :: Bool
 prop_empty = isDerangement ([]::[Int]) ([]::[Int]) == True
 
 -- Two lists containing only one element can never be a derangement of eachother so
 -- the result of the isDerangement function of two singleton lists should always be false.
-prop_single x y = isDerangement [x] [y] == False
-
--- Any even list is a derangement of its reverse. So the result of the isDerangement on
--- a even list and its reverse should always be true.
-prop_reverse n = isDerangement [0..n-1] (reverse [0..n-1]) == True
+prop_single :: Int -> Int -> Bool
+prop_single x y = isDerangement [x :: Int] [y :: Int] == False
 
 -- The function deran generates all derangements of a list [0..n-1]. So the result of
 -- the isDerangement function on the list [0.n-1] and any list from the deran output,
 -- should always be true.
+-- prop_deran :: Int -> Property
+-- prop_deran n = (n > 1) && (n < 7) ==> all (\ x -> isDerangement [0..n-1] x) (deran n)
+prop_deran :: Int -> Bool
 prop_deran n = all (\ x -> isDerangement [0..n-1] x) (deran n)
 
 -- The function nonderan generates all permutations that are not derangements. So the
 -- result of the isDerangement function on the list [0..n-1] and any list from the nonderan
 -- output, should always be false.
+-- prop_nonderan :: Int -> Property
+-- prop_nonderan n = (n > 1) && (n < 7) ==> all (\ x -> (isDerangement [0..n-1] x) == False) (nonderan n)
+prop_nonderan :: Int -> Bool
 prop_nonderan n = all (\ x -> (isDerangement [0..n-1] x) == False) (nonderan n)
+
+-- Any even list is a derangement of its reverse. So the result of the isDerangement on
+-- a even list and its reverse should always be true.
+prop_reverse :: Int -> Property
+prop_reverse n = (n >= 2) && (mod n 2 == 0) ==> isDerangement [0..n-1] (reverse [0..n-1]) == True
 
 -- A list can never be a derangement of itself. So the result of the isDerangement
 -- function on two identical lists, should always be false.
-prop_same n = isDerangement [0..n-1] [0..n-1] == False
+prop_same :: Int -> Property
+prop_same n = (n >= 2) ==> isDerangement [0..n-1] [0..n-1] == False
 
 -- Use quickCheck to automatically test the aforementioned properties of isDerangement.
 -- For each property, an appropriate quickCheck generator is used (explained in report below).
 main :: IO ()
 main = do
     quickCheck prop_empty
-    quickCheck (forAll (arbitrary :: Gen Int) prop_single)
-    quickCheck (forAll (suchThat getSize (\ x -> (mod x 2 == 0) && (x >= 2))) prop_reverse)
-    quickCheck (forAll sizeGen prop_deran)
-    quickCheck (forAll sizeGen prop_nonderan)
-    quickCheck (forAll (suchThat getSize (\ x -> (x >= 2))) prop_same)
+    quickCheck $ forAll (arbitrary :: Gen Int) $ prop_single
+    -- quickCheck prop_deran
+    quickCheck $ forAll (suchThat (arbitrary :: Gen Int) (\ x -> (x > 1) && (x < 7))) $ prop_deran
+    -- quickCheck prop_nonderan
+    quickCheck $ forAll (suchThat (arbitrary :: Gen Int) (\ x -> (x > 1) && (x < 7))) $ prop_nonderan
+    quickCheck prop_reverse
+    quickCheck prop_same
 
 
 {-
@@ -122,11 +128,11 @@ to weakest):
 
 1. empty list: An empty list is a derangement of itself.
 2. singleton list: Two lists containing 1 element can never be derangements of each other.
-3. reverse lists: An even list and its reverse are always derangements of each other.
-4. known derangements: When inputting two lists that are known to be derangements of each
+3. known derangements: When inputting two lists that are known to be derangements of each
    other, the isDerangement function should always return True.
-5. known non-derangements: When inputting two lists that are known to not be derangements
+4. known non-derangements: When inputting two lists that are known to not be derangements
    of each other, the isDerangement function should always return False.
+5. reverse lists: An even list and its reverse are always derangements of each other.
 6. same lists: A list of 1 or more elements is never a derangement of itself.
 
 For the first property, no generator is needed. For the second property, an int generator
@@ -155,6 +161,6 @@ All quickCheck tests pass, as expected, giving the following output:
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
 
-This means that my implementation of isDerangement is most likely correct.
+This means that my implementation of isDerangement is most likely correct (not 100% proved).
 
 -}

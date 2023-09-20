@@ -32,8 +32,24 @@ cnf (Neg (Prop x)) = Neg (Prop x)                                               
 cnf (Neg (Neg f)) = cnf f                                                         -- Double negation law
 cnf (Neg (Cnj fs)) = Dsj (map (\ z -> cnf (Neg z)) fs)                            -- DeMorgan's law
 cnf (Neg (Dsj fs)) = Cnj (map (\ z -> cnf (Neg z)) fs)                            -- DeMorgan's law
-cnf (Neg f) = Neg (cnf f)
+cnf (Neg f) = Neg (cnf f)                                                         -- Negation of Impl or Equiv
 cnf (Cnj fs) = Cnj (map cnf fs)                                                   -- Conjuctions should stay
 cnf (Dsj [x, Cnj [y, z]]) = Cnj [Dsj [cnf x, cnf y], Dsj [cnf x, cnf z]]          -- Distributive law
 cnf (Impl f1 f2) = Dsj [cnf (Neg f1), cnf f2]                                     -- Conditional law
 cnf (Equiv f1 f2) = Cnj [Dsj [cnf (Neg f1), cnf f2], Dsj [cnf f1, cnf (Neg f2)]]  -- Biconditional law
+
+
+{-
+--------- LIBRARIES ---------
+
+
+
+--------- CODE DESCRIPTION (PURPOSE, FEATURES, ARCHITECTURE) ---------
+
+
+
+--------- TESTING APPROACH ---------
+
+
+
+-}
