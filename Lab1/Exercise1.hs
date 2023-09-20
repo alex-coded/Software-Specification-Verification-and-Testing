@@ -21,6 +21,7 @@ posGen = suchThat (arbitrary :: Gen Integer) (>= 0)
 posGen2 :: Random Integer
 posGen2 = suchThat (arbitrary :: Gen Integer) (>= 1)
 
+-- To prove that these statements are true, we use induction.
 prop_eq1 :: Integer -> Bool
 prop_eq1 n = (div (factorial n) n) == (factorial (n - 1))
 
@@ -37,4 +38,3 @@ main = do
     quickCheck $ forAll posGen2 $ prop_eq2
     quickCheck $ forAll posGen $ prop_eq3
 
--- To prove that these statements are true, we would use induction.
