@@ -23,7 +23,6 @@ prop_eq1 = length (my_subsequences []) == 1
 prop_eq2 :: Integer -> Bool
 prop_eq2 n = length (my_subsequences [1..n]) == 2^n
 
-
 prop_eq3 :: Integer -> Bool
 prop_eq3 n = length(my_subsequences [1..n]) * 2 == length(my_subsequences [1..(n + 1)])
 
@@ -36,5 +35,3 @@ main = do
     quickCheck $ forAll posGen $ prop_eq2
     quickCheck $ forAll posGen $ prop_eq3
     quickCheck $ forAll posGen $ prop_eq4
-
--- To prove that these statements are true, we would use induction.
