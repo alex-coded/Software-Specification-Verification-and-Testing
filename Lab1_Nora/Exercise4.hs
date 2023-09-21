@@ -3,7 +3,7 @@
 -- Study: MSc Software Engineering.
 -- This program is intended to check if one list is a derangement of another. This
 -- functionality is tested using quickCheck on multiple properties.
--- Time spend: 10 hours
+-- Time spent: 14 hours
 
 module Exercise4 where
 
@@ -41,6 +41,11 @@ limitedSizeGen = suchThat (arbitrary :: Gen Int) (\ x -> (x > 1) && (x < 7))
 prop_empty :: Bool
 prop_empty = isDerangement ([]::[Int]) ([]::[Int]) == True
 
+-- Two lists containing only one element can never be a derangement of eachother so
+-- the result of the isDerangement function of two singleton lists should always be false.
+prop_single :: Int -> Int -> Bool
+prop_single x y = isDerangement [x :: Int] [y :: Int] == False
+
 -- The function deran generates all derangements of a list [0..n-1]. So the result of
 -- the isDerangement function on the list [0.n-1] and any list from the deran output,
 -- should always be true.
@@ -58,26 +63,46 @@ prop_nonderan n = all (\ x -> (isDerangement [0..n-1] x) == False) (nonderan n)
 prop_reverse :: Int -> Property
 prop_reverse n = (n >= 2) && (mod n 2 == 0) ==> isDerangement [0..n-1] (reverse [0..n-1]) == True
 
+-- This is a dummy Bool version of the reverse property for the purpose of comparing
+-- strength with other properties.
+dummy_prop_reverse :: Int -> Bool
+dummy_prop_reverse n = isDerangement [0..n-1] (reverse [0..n-1]) == True
+
 -- A list can never be a derangement of itself. So the result of the isDerangement
 -- function on two identical lists, should always be false.
 prop_same :: Int -> Property
 prop_same n = (n >= 2) ==> isDerangement [0..n-1] [0..n-1] == False
 
--- Two lists containing only one element can never be a derangement of eachother so
--- the result of the isDerangement function of two singleton lists should always be false.
-prop_single :: Int -> Int -> Bool
-prop_single x y = isDerangement [x :: Int] [y :: Int] == False
+-- This is a dummy Bool version of the same property for the purpose of comparing
+-- strength with other properties.
+dummy_prop_same :: Int -> Bool
+dummy_prop_same n = isDerangement [0..n-1] [0..n-1] == False
+
+infix 1 -->
+
+-- This function is a helper function for the stronger and weaker functions.
+(-->) :: Bool -> Bool -> Bool
+p --> q = (not p) || q
+
+-- This function is a helper function for the stronger and weaker functions.
+forall :: [a] -> (a -> Bool) -> Bool
+forall = flip all
+
+-- Functions used to determine which of two properties is stronger or weaker.
+stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
+stronger xs p q = forall xs (\ x -> p x --> q x)
+weaker xs p q = stronger xs q p
 
 -- Use quickCheck to automatically test the aforementioned properties of isDerangement.
 -- For each property, an appropriate quickCheck generator is used (explained in report below).
 main :: IO ()
 main = do
-    prop_empty
+    quickCheck prop_empty
+    quickCheck prop_single
     quickCheck $ forAll limitedSizeGen $ prop_deran
     quickCheck $ forAll limitedSizeGen $ prop_nonderan
     quickCheck prop_reverse
     quickCheck prop_same
-    quickCheck prop_single
 
 
 {-
@@ -116,27 +141,47 @@ only derangements.
 --------- TESTING APPROACH ---------
 
 Step 3 is done by creating a list of properties of the isDerangement function and testing
-these properties using quickCheck. The following properties were tested (ordered from strongest
-to weakest):
+these properties using quickCheck. The following properties were tested:
 
 1. (Base case property) empty list: An empty list is a derangement of itself.
-2. known derangements: When inputting two lists that are known to be derangements of each
+2. (Base case property) singleton list: Two lists containing 1 element can never be
+   derangements of each other.
+3. known derangements: When inputting two lists that are known to be derangements of each
    other, the isDerangement function should always return True.
-3. known non-derangements: When inputting two lists that are known to not be derangements
+4. known non-derangements: When inputting two lists that are known to not be derangements
    of each other, the isDerangement function should always return False.
-4. reverse lists: An even list and its reverse are always derangements of each other.
-5. same lists: A list of 1 or more elements is never a derangement of itself.
-6. singleton list: Two lists containing 1 element can never be derangements of each other.
+5. reverse lists: An even list and its reverse are always derangements of each other.
+6. same lists: A list of 1 or more elements is never a derangement of itself.
 
-For the first property, no generator is needed. For the second property, an int generator
-is used to generate the singleton elements of the two input lists. For properties 3, 4, 5 and 6,
-lists of the form [0..n-1] are used to test the properties. In case of property 3 and 4, a
-size generator is used to generate the input size n. This size generator is limited to be between
+For the first property, no generator is needed, since there is only one input. It is also non
+needed to use the quickCheck function, but it is the easiest way to show that the test passes with
+IO () as output type. For the second property, there is no precondition for the input, so no
+generator or Property type is needed. For properties 3, 4, 5 and 6, lists of the form [0..n-1] are
+used to test the properties, and there are preconditions to the input n. In case of property 3 and 4,
+a size generator is used to generate the input size n. This size generator is limited to be between
 2 and 7. We chose to limit the size to >= 2 because lists of size 0 and 1 are already tested in
 properties 1 and 2. The upper bound of 7 is chosen for efficiency reasons, since the permutations
-function (used by deran and nonderan) takes a long time on lists larger than 6. For properties 5
-and 6, the size generator is limited to integers >= 2, for the same reason as described before.
-No upper bound is needed since the permutations function is not used.
+function (used by deran and nonderan) takes a long time on lists larger than 6. I could have used
+the Property type and define the preconditio in it, but since this precondition is so strong, too
+many tests get discarded, and quickCheck gives up on the test after 1000 discarded tests. So instead,
+I used the size generator. For properties 5 and 6, I did use the Property type, and defined the pre-
+condition in the property. Here, the discarded tests are not a problem since there is no upper bound
+in the precondition.
+
+As for the strength of the properties, only the last 4 properties can be compared to eachother. I did
+try to compare property strength using the stronger and weaker functions. However, this was difficult
+since the deran and nonderan functions take very long to execute for an input size that exceeds 7. Using
+such a small domain is not ideal for the prop_same and prop_reverse properties. So I decided to compare
+property strength myself, and I ended on the following ranking (from strongest to weakest):
+
+1. Known derangements and known non-derangements (same strength)
+2. Reverse lists
+3. Same lists
+
+The postconditions of all these properties have the same strength, so I compared the strength
+of the preconditions. Known derangements and known non-derangements have the same, strongest,
+precondition of (n > 1) && (n < 7). Reverse lists has a weaker precondition of (n >= 2) &&
+(mod n 2 == 0). Same lists has the weakest precondition of (n >= 2).
 
 I do wonder if properties 3 and 4 are valid for testing the isDerangement funciton in their
 current implementation, since the properties use the deran and nonderan functions. In their
@@ -151,8 +196,8 @@ All quickCheck tests pass, as expected, giving the following output:
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
-+++ OK, passed 100 tests.
-+++ OK, passed 100 tests.
++++ OK, passed 100 tests; 375 discarded.
++++ OK, passed 100 tests; 149 discarded.
 
 This means that my implementation of isDerangement is most likely correct (not 100% proved).
 

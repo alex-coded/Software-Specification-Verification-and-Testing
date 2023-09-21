@@ -3,7 +3,7 @@
 -- Study: MSc Software Engineering.
 -- This program is intended to implement and test the function to generate a list
 -- of subsequences of a given list.
--- Time spend: 4 hours
+-- Time spent: 4 hours
 
 module Exercise2 where
 
@@ -64,6 +64,6 @@ Are you checking a mathematical fact? Or are you testing whether
 subsequences satisfies a part of its specification? Or are you testing
 something else still?
 
-
+???
 
 -}

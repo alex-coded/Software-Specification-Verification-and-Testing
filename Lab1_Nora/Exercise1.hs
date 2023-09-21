@@ -2,7 +2,7 @@
 -- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
 -- Study: MSc Software Engineering.
 -- This program is intended to implement and test the factorial function.
--- Time spend: 3 hours
+-- Time spent: 3 hours
 
 module Exercise1 where
 
@@ -15,17 +15,17 @@ factorial n = n * (factorial (n - 1))
 
 -- For a given natural number n, the factorial n! can be written as n * (n - 1)!.
 -- Therefore, for all natural numbers n, n! / n should equal (n - 1)!.
-prop_div :: Integer -> Property
-prop_div n = (n > 0) ==> div (factorial n) n == factorial (n - 1)
+prop_div :: Integer -> Bool
+prop_div n = div (factorial n) n == factorial (n - 1)
 
 -- The factorial of any natural number n should always be a positive number.
-prop_pos :: Integer -> Property
-prop_pos n = (n > 0) ==> factorial n > 0
+prop_pos :: Integer -> Bool
+prop_pos n = factorial n > 0
 
 -- The factorial of any natural number above 1, should always be even, since there
 -- is always a 2 in the multiplication, which means it can always be divided by 2 as well.
-prop_even :: Integer -> Property
-prop_even n = (n > 1) ==> mod (factorial n) 2 == 0
+prop_even :: Integer -> Bool
+prop_even n = mod (factorial n) 2 == 0
 
 -- The three factorial are automatically tested using quickCheck, and generators to
 -- generate the inputs.
@@ -62,11 +62,14 @@ These properties are used by quickCheck to test the factorial function. For each
 a generator is used to generate the appropriate input. For the first two properties, the
 input should be natural numbers, so integers > 0. For the third property, the input should
 be integers > 1. The exercise requires a random generator. Since the quickCheck Gen construct
-already generates random integers, the System.Random library is not needed.
+already generates random integers, the System.Random library is not needed. Since the exercise
+calls for Gen construct generators, I did not need to use the Property type.
 
 All three tests passed, as expected, giving the following output:
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
+
+This means that the implementation of the factorial function is most likely correct (not proven).
 
 -}

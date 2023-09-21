@@ -1,3 +1,9 @@
+-- Names: Alexandra Volentir, Daria Protsenko, Nora Silven, Shuqi Yi.
+-- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
+-- Study: MSc Software Engineering.
+-- This program is intended to convert a Boolean proposition to Conjunctive Normal Form.
+-- Time spent: 8 hours
+
 module Exercise6 where
 
 import Lecture3
@@ -15,11 +21,23 @@ cnf (Neg (Cnj fs)) = Dsj (map (\ z -> cnf (Neg (cnf z))) fs)                    
 cnf (Neg (Dsj fs)) = Cnj (map (\ z -> cnf (Neg (cnf z))) fs)                                        -- De Morgan's law
 cnf (Neg f) = cnf (Neg (cnf f))                                                                     -- Negation of Impl or Equiv
 cnf (Cnj fs) = Cnj (map cnf fs)                                                                     -- Conjuctions should stay
-cnf (Dsj [x, Cnj [y, z]]) = Cnj [Dsj [cnf x, cnf y], Dsj [cnf x, cnf z]]                            -- Distributive law
-cnf (Dsj [Cnj [x, y], z]) = Cnj [Dsj [cnf x, cnf z], Dsj [cnf y, cnf z]]                            -- Distributive law
+cnf (Dsj [x, Cnj [y, z]]) = cnf (Cnj [Dsj [cnf x, cnf y], Dsj [cnf x, cnf z]])                      -- Distributive law
+cnf (Dsj [Cnj [x, y], z]) = cnf (Cnj [Dsj [cnf x, cnf z], Dsj [cnf y, cnf z]])                      -- Distributive law
 cnf (Dsj fs) = Dsj (map cnf fs)                                                                     -- Non-distributable disjunctions should stay
-cnf (Impl f1 f2) = Dsj [cnf (Neg (cnf f1)), cnf f2]                                                 -- Conditional law
+cnf (Impl f1 f2) = cnf (Dsj [cnf (Neg (cnf f1)), cnf f2])                                           -- Conditional law
 cnf (Equiv f1 f2) = cnf (Cnj [Dsj [cnf (Neg (cnf f1)), cnf f2], Dsj [cnf f1, cnf (Neg (cnf f2))]])  -- Biconditional law
+
+-- Testing some example proposition of which the CNF is known (see testing report below).
+main :: IO ()
+main = do
+   let p = Prop 1
+   let q = Prop 2
+   print (cnf (Neg (Neg (Neg p))))
+   print (cnf (Neg (Dsj [p, Neg q])))
+   print (cnf (Neg (Cnj [Neg p, Neg q])))
+   print (cnf (Equiv (Impl p q) (Impl (Neg q) (Neg p))))
+   print (cnf (Neg (Impl (Neg p) q)))
+   print (cnf (Equiv (Dsj [Neg p, q]) (Cnj [Neg q, p])))
 
 
 {-
@@ -77,7 +95,7 @@ Proposition: (p -> q) <-> (¬q -> ¬p)
 Known CNF: (q v ¬p v p) ^ (q v ¬p v ¬q) ^ (¬p v q v ¬q) ^ (¬p v q v p)
 Function input: Equiv (Impl p q) (Impl (Neg q) (Neg p))
 Function output: *(*(+(1 +(2 -1)) +(-2 +(2 -1))) *(+(+(-1 2) -2) +(+(-1 2) 1)))
-Rewritten output: ((p v (q v ¬p)) * (¬q v (q v ¬p))) ^ (((¬p v q) v ¬q) * ((¬p v q) v p))
+Rewritten output: ((p v (q v ¬p)) ^ (¬q v (q v ¬p))) ^ (((¬p v q) v ¬q) ^ ((¬p v q) v p))
 Output is correct: True
 
 Proposition: ¬(¬p -> q)
@@ -87,8 +105,15 @@ Function output: *(-1 -2)
 Rewritten output: ¬p ^ ¬q
 Output is correct: True
 
-As expected, all the cnf function yielded the correct output for these 5 test cases.
-These are just 5 test cases, and it would obviously be better to test more cases, but
+Proposition: (¬p v q) <-> (¬q ^ p)
+Known CNF: (p v ¬q) ^ (¬p v ¬q) ^ (p v p) ^ (¬q v p) ^ (¬p v q v q v ¬p)
+Function input: Equiv (Dsj [Neg p, q]) (Cnj [Neg q, p])
+Function output: *(*(*(+(1 -2) +(-2 -2)) *(+(1 1) +(-2 1))) +(+(-1 2) +(2 -1)))
+Rewritten output: (((p v ¬q) ^ (¬q v ¬q)) ^ ((p v p) ^ (¬q v p))) ^ ((¬p v q) v (q v ¬p))
+Output is correct: True
+
+As expected, all the cnf function yielded the correct output for these 6 test cases.
+These are just 6 test cases, and it would obviously be better to test more cases, but
 due to time constraints I decided to keep it at this. These tests do not prove that my
 implementation of the cnf function is correct, but it does increase my confidence.
 
