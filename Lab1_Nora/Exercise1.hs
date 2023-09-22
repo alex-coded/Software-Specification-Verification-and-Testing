@@ -9,6 +9,9 @@ module Exercise1 where
 import Test.QuickCheck
 
 -- This function takes an integer n and recursively calculates the factorial n!
+-- The factorial of the edge case 0 is 1.
+-- For n with a value greater than 0, this function will be executed recursively
+-- to multiply all consecutive integers from 1 to n.
 factorial :: Integer -> Integer
 factorial 0 = 1
 factorial n = n * (factorial (n - 1))
