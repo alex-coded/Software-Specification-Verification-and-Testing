@@ -15,7 +15,7 @@ import Test.QuickCheck
 -- retieve the subsequences.t
 subsequences :: [a] -> [[a]]
 subsequences [] = [[]]
-subsequences (h:t) = (my_subsequences t) ++ [h:ps | ps <- my_subsequences t]
+subsequences (h:t) = (subsequences t) ++ [h:ps | ps <- subsequences t]
 
 -- posGen :: Gen Integer
 -- posGen = suchThat (arbitrary :: Gen Integer) (>= 1)
@@ -24,17 +24,17 @@ subsequences (h:t) = (my_subsequences t) ++ [h:ps | ps <- my_subsequences t]
 -- First step is the base step where we prove that the number of subsequences of an empty list
 -- equals 2^0, which is 1.
 prop1 :: Bool
-prop1 = length (my_subsequences []) == 1
+prop1 = length (subsequences []) == 1
 
 -- For any list with n elements, the amount of subsequences should be 2^n.
 -- This property can be expressed in: If A is a finite set with |A| = n, then |P(A)| = 2^n.
 prop2 :: Integer -> Property
-prop2 n = (n >= 0) && (n < 20) ==> (length (my_subsequences [1..n]) == 2^n)
+prop2 n = (n >= 0) && (n < 20) ==> (length (subsequences [1..n]) == 2^n)
 
 -- Induction step.
 -- This property can be expressed in: If |P(A)| = 2^n, then |P(A)| * 2 = 2^(n+1).
 prop3 :: Integer -> Property
-prop3 n = (n >= 0) && (n < 20) ==> (length (my_subsequences [1..n]) * 2 == length (my_subsequences [1..(n + 1)]))
+prop3 n = (n >= 0) && (n < 20) ==> (length (subsequences [1..n]) * 2 == length (subsequences [1..(n + 1)]))
 
 -- We automatically test the property using quickCheck.
 main :: IO ()
@@ -63,7 +63,7 @@ The subsequences function is used to test the following properties:
 "If A is a finite set with |A| = n then |P(A)| = 2^n."
 "If |P(A)| = 2^n, then |P(A)| * 2 = 2^(n+1)."
 
-These properties are used by quickCheck to test the my_subsequences function. For each property,
+These properties are used by quickCheck to test the subsequences function. For each property,
 the precondition is defined before the '==>' operator to only allow the appropriate inputs,
 inputs that don' satisfy the precondition will be discarded. The postcondition is defined after
 '==>' operator, the test will only succeed if the postcondition is also satisfied.

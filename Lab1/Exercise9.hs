@@ -90,27 +90,17 @@ inputs that don' satisfy the precondition will be discarded. The postcondition i
 '==>' operator, the test will only succeed if the postcondition is also satisfied.
 To test this property, lists containing random numbers between 1 en 3 are used.
 These generated list will have maximum 3 elements and doesn't contain any duplicated element.
-The choise to limit the input list is to decrease the number of discarded tests.
-How smaller the set
+The choise to limit the length of the input list is to decrease the number of discarded tests.
+How more elements in the list, how smaller the chance that the two input lists are permutations of each other.
+This could result to too many cases for which the precondition could not be satisfied, causing too many
+diacarded tests.
 
 The quickCheck test passed, as expected, giving the following result:
 +++ OK, passed 100 tests; 403 discarded.
 +++ OK, passed 100 tests; 365 discarded.
 +++ OK, passed 100 tests.
 
-This means that the property described above is likely correct and proved by induction.
-
-Is the property hard to test? If you find that it is, can you given a reason why?
-- The property is hard to test, because the subsequences function takes a long time to
-  execute when the input list has a length of 25 or higher. This is why I restricted the
-  input n to be below 20, since this allows the tests to take <10 seconds.
-
-When you perform the test for exercise 2, what are you testing actually?
-Are you checking a mathematical fact? Or are you testing whether
-subsequences satisfies a part of its specification? Or are you testing
-something else still?
-- When testing the for this exercise, we intent to simulate the proof of the property
-  "If A is a finite set with |A| = n then |P(A)| = 2^n." by using induction.
-  Base step with an empty set is tested, by testing 2^n and 2^(n+1), the induction step is also completed.
+This means that the results of the isPermutation function satisfy our defined properties,
+which means that the funvtion is likely correct implemented.
 
 -}
