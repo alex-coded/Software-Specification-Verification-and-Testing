@@ -1,9 +1,3 @@
-<<<<<<< Updated upstream
-module Exercise2 where
-
-import Lecture2
--- imported quicksort and stronger
-=======
 -- Study: MSc Software Engineering.
 -- This program is intended to define properties, compare their strengths, and sort these by strength in descending order. 
 -- Time spend: 3 hours
@@ -12,7 +6,6 @@ import Lecture2
 module Exercise2 where
 
 import Lecture2
->>>>>>> Stashed changes
 
 prop1 :: Int -> Bool
 prop1 x = even x && x >= 4
@@ -26,31 +19,14 @@ prop3 x = (even x && x >= 4) || even x
 prop4 :: Int -> Bool
 prop4 x = even x || x < 4
 
-<<<<<<< Updated upstream
-properties :: [(String, Int -> Bool)]
-properties =
-=======
 listOfProperties :: [(String, Int -> Bool)]
 listOfProperties =
->>>>>>> Stashed changes
   [ ("prop1", prop1),
     ("prop2", prop2),
     ("prop3", prop3),
     ("prop4", prop4)
   ]
 
-<<<<<<< Updated upstream
--- Compare properties by strength
-propCpmparisson :: [(String, Int -> Bool)] -> [(String, [String])]
-propCpmparisson props =
-  [(pName, [otherName | (otherName, _) <- props, pName /= otherName && stronger [-10..10] (propertyByName pName) (propertyByName otherName)]) | (pName, _) <- props]
-  where
-    propertyByName pName x = case lookup pName properties of
-      Just prop -> prop x
-      Nothing -> False
-
--- Sort properties by strength (using the given quicksort function)
-=======
 propCpmparisson :: [(String, Int -> Bool)] -> [(String, [String])]
 propCpmparisson props =
   [(pName, [oName | (oName, _) <- props, pName /= oName && stronger [-10..10] (propertyByName pName) (propertyByName oName)]) | (pName, _) <- props]
@@ -59,19 +35,12 @@ propCpmparisson props =
       Just prop -> prop x
       Nothing -> False
 
->>>>>>> Stashed changes
 getPropertiesByDescStrength :: [(String, [String])] -> [(String, [String])]
 getPropertiesByDescStrength = quicksort
 
 
 main :: IO ()
 main = do
-<<<<<<< Updated upstream
-  let comparisons = propCpmparisson properties
-  let sortedProps = getPropertiesByDescStrength comparisons
-  mapM_ (\(propName, _) -> putStrLn propName) sortedProps
-  
-=======
   let comparisons = propCpmparisson listOfProperties
   let sortedProps = getPropertiesByDescStrength comparisons
   mapM_ (\(propName, _) -> putStrLn propName) sortedProps
@@ -121,4 +90,3 @@ main = do
 -- The condition didn't ask for any testing to validate the code. We could, indeed, verify that the properties are correct
 -- by giving a larger domain, and, more, validating whether the sorting produces the desired results and properties behave as expected.
 -- I could've also tested this code for another set of properties to test whether the comparissons and sorting produce the desired results. 
->>>>>>> Stashed changes
