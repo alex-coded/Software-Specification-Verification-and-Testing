@@ -1,5 +1,3 @@
--- Names: Alexandra Volentir, Daria Protsenko, Nora Silven, Shuqi Yi.
--- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
 -- Study: MSc Software Engineering.
 -- This program is intended to model a smart door, and to test 8 different smart door implementations
 -- based on the model.

@@ -195,18 +195,18 @@ Suspension Traces:
 
 -- Trace Generator --
 
-In the above we have implemented the tracesGen function - which is basically generates 
-random traces for our IOLTS. 
+In the above we have implemented the tracesGen function - which is basically generates
+random traces for our IOLTS.
 
-The most important thing to note about the traceGen is that generates random IOLTS with 
+The most important thing to note about the traceGen is that generates random IOLTS with
 random number of transitions and states. Afterwards, the suspension traces are calculated,
 later to take the first strace out of the staces and return that as a Gen trace.
 
-This was needed for our quickCheck tests. 
+This was needed for our quickCheck tests.
 
-We verify that our staces function is ok with the prop_straces_are_susp prop. 
+We verify that our staces function is ok with the prop_straces_are_susp prop.
 With this property we check that all the generated traces are inded suspension traces for
-th IOLTS with our  `straces` func. 
+th IOLTS with our  `straces` func.
 
 
 +++ OK, passed 100 tests.

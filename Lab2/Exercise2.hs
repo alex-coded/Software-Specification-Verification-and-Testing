@@ -1,5 +1,3 @@
--- Names: Alexandra Volentir, Daria Protsenko, Nora Silven, Shuqi Yi.
--- UvA student IDs: 15257304, 12856991, 13223585, 12513938.
 -- Study: MSc Software Engineering.
 -- This program is intended to randomly generate different kinds of IOLTSs, including valid and invalid
 -- IOLTSs. These generators are used to test the validateLTS function from Exercise1 using quickCheck.
