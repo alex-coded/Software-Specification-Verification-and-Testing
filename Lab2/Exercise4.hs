@@ -35,7 +35,6 @@ after' lt states (th:tt) = after' lt (nextStates' lt states th) tt
 
 --This function returns the set of states reached after the given trace.
 after :: IOLTS -> Trace -> [State]
-after (_, _, _, _, q0) [] = [q0]
 after (_, _, _, lt, q0) trace = nub (after' lt [q0] trace)
 
 -------------------------TESTING------------------------------------------------------
