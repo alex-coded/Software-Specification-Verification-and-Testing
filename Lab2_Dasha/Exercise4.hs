@@ -31,7 +31,7 @@ nextStates' lt state label = nub [s | (s', label, s)<- lt , elem s' state]
 --The final output is the states reached after a whole trace.
 after' :: [LabeledTransition] -> [State] -> Trace -> [State]
 after' lt states [] = states
-after' lt states (th:tt) = after' lt (nextStates' lt states th) 
+after' lt states (th:tt) = after' lt (nextStates' lt states th) tt
 
 --This function returns the set of states reached after the given trace. 
 after :: IOLTS -> Trace -> [State]
@@ -119,3 +119,4 @@ To test the other properties, I would use the following format:
 
 Traces and straces would be tested for as they would be included in the properties functions.
 
+-}
