@@ -31,8 +31,24 @@ import Test.QuickCheck
 -- traces :: LTS -> [Trace] -- [[Label]]
 -- traces (q, l, lt, q0) = nub $ map snd (traces' lt [([q0],[])])
 
+nextStates':: [LabeledTransition]->[State]->Label->[(State, Label)]
+nextStates' lt state label =  [(s',l) | (s',l,s)<- lt , elem s state, l == label]
+
+findfollowingstates':: [LabeledTransition] -> [State] -> [Label] -> [([State],[Label])]
+findfollowingstates' lt states [] = []
+findfollowingstates' lt states labels = nextStates' lt states (last labels)
+
+traces'' :: LTS -> [([State],[Label])]
+traces'' (q, l, lt, q0) = nub (traces' lt [([q0],[])])
+
+
+after' :: [LabeledTransition] -> State -> [Label] -> [([State],[Label])]-> [([State],[Label])]
+after' t q0 [] = []
+after' t q0 (th:tt) = []
+
 after :: IOLTS -> Trace -> [State]
-after ([], _, _, t, _) =
+after (_, _, _, _, q0) [] = q0
+after (_, _, _, t, q0) (th:tt) =
 after ((qh:qt), li, lu, t, q0) =
 
 
