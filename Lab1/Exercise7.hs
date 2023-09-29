@@ -1,3 +1,6 @@
+-- Study: MSc Software Engineering.
+-- Time spend: 3 hours
+
 module Exercise7 where
 
 import Test.QuickCheck
@@ -71,7 +74,7 @@ nsub f = case f of
 
 -- Property 1: All subformulas are indeed subformulas of the input.
 prop_checkThatAllSubAreSub :: Form -> Property
-prop_checkThatAllSubAreSub f = 
+prop_checkThatAllSubAreSub f =
   forAll (elements $ toList $ sub f) $ \sf ->
     sf `isSubformulaOf` f
 
@@ -102,10 +105,10 @@ main = do
 --------- CODE DESCRIPTION (PURPOSE, FEATURES, ARCHITECTURE) ---------
 
 -- First, we are given the data type Form which actually represents logical formulae,
--- I used the arbitrary instance for form in order to be able to generate test cases for 
+-- I used the arbitrary instance for form in order to be able to generate test cases for
 -- QuickCheck. The arbitrary fun gives random formulae (propositions, disjunctions, implications, negations) recursively.
--- With the helper function isSubformulaOf I basically check if subformula sf is included in the formula f, whereas sub calculates 
--- the set of subformulas given a formula f. 
+-- With the helper function isSubformulaOf I basically check if subformula sf is included in the formula f, whereas sub calculates
+-- the set of subformulas given a formula f.
 
 
 -- I implemented the last property with the function nsub - that calculates recursively the concrete no. of subformulae of a
@@ -113,14 +116,14 @@ main = do
 
 
 --------- TESTING APPROACH ---------
-  
+
 -- I used 3 QuickCheck properties to test this code. The first property wants to verify if a subformula
--- is indeed, a valid subformula of the original formula f. It checks the property for many randomly generated 
+-- is indeed, a valid subformula of the original formula f. It checks the property for many randomly generated
 -- formulae with the help of forAll. We just use the isSubformulaOf function.
 
--- The second property asserts that no subformulaes are missing from the initial formula. 
+-- The second property asserts that no subformulaes are missing from the initial formula.
 
 -- In short, in the first part of the exercise, we used the above two properties to prove the correctness of the code.
 
--- With nsub we had two base cases (Prop _) and (Neg f) to check if the formula is a simple proposition (lead node), or if it is 
+-- With nsub we had two base cases (Prop _) and (Neg f) to check if the formula is a simple proposition (lead node), or if it is
 -- a negation of another formula. Later, we just effectively traverse the entire formula tree, and add to the counter of each formula seen.
