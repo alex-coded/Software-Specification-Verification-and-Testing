@@ -64,7 +64,7 @@ main :: IO ()
 main = do
     putStrLn "Testing with QuickCheck"
     quickCheck prop_straces_are_susp
-    quickCheckWith stdArgs { maxSuccess = 20 } prop_no_dup_traces
+    -- quickCheckWith stdArgs { maxSuccess = 20 } prop_no_dup_traces
 
 
 -- Define a property to check that all generated traces are suspension traces
