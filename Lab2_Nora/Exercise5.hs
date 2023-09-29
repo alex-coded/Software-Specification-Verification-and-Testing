@@ -41,7 +41,7 @@ testLoop q s (l:ls) t impl = do
 -- Use this line to test each implementation one by one.
 main :: IO ()
 main = do
-    print (testLTSAgainstSUT doorModel doorImpl1)
+    print (testLTSAgainstSUT doorModel doorImpl8)
 
 
 {-
