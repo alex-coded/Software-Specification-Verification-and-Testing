@@ -8,6 +8,7 @@ module Exercise3 where
 -- import Exercise2
 import Data.List
 import LTS
+
 import Test.QuickCheck
 
 -- This function returns True if a state in a list of state transitions is quiescent and False otherwise.
@@ -32,58 +33,184 @@ straces' (qh:qt, li, lu, t, q0) | isQuiescent (nextTransitions' t qh) lu = strac
 -- BY using the traces' function defined in LTS.hs, we retieve all traces of the given IOLTS
 -- based on the updated transitions including suspension transitions.
 straces :: IOLTS -> [Trace]
-straces (q, li, lu, t, q0) = map snd (traces' (straces' (q, li, lu ++ [delta], t, q0)) [([q0],[])])
-
-
--- TESTING PART --
-
-isInputLabel :: Label -> Bool
-isInputLabel label = not (null label) && head label == '?'
-
-isOutputLabel :: Label -> Bool
-isOutputLabel label = not (null label) && head label == '!'
-
-
-prop_no_quiescent_states :: IOLTS -> Property
-prop_no_quiescent_states (q, li, lu, t, q0) = not (null (straces (q, li, lu, t, q0))) ==> not (any (hasQuiescent lu) (straces (q, li, lu, t, q0)))
-  where
-    hasQuiescent :: [Label] -> Trace -> Bool
-    hasQuiescent lu = any (\label -> isQuiescent [(0, label)] lu)
-
-
--- prop_start_from_initial_state :: IOLTS -> Property
--- prop_start_from_initial_state (q, li, lu, t, q0) = not (null (straces (q, li, lu, t, q0))) ==> all (\(state, _) -> state == q0) (head (straces (q, li, lu, t, q0)))
-
--- prop_suspended_trace_structure :: IOLTS -> Property
--- prop_suspended_trace_structure (q, li, lu, t, q0) = not (null (straces (q, li, lu, t, q0))) ==> all isTransitionList (straces (q, li, lu, t, q0))
---   where
---     isTransitionList :: Trace -> Bool
---     isTransitionList trace = all isTransitionLabel trace
-
---     isTransitionLabel :: Label -> Bool
---     isTransitionLabel label = label /= tau && (isInputLabel label || isOutputLabel label)
+straces (q, li, lu, t, q0) = nub $ map snd (traces' (t ++ straces' (q, li, lu ++ [delta], t, q0)) [([q0],[])])
 
 
 -- This generator randomly generates transitions of the form (State, Label, State).
 transitionGen :: Gen LabeledTransition
 transitionGen = do
-    k <- chooseInteger(2, 20)
-    s <- chooseInteger(1, k)
-    t <- suchThat (chooseInteger(1, k)) (/= s)
+    k <- chooseInteger (2, 20)
+    s <- chooseInteger (1, k)
+    t <- suchThat (chooseInteger (1, k)) (/= s)
     l <- elements ([tau] ++ (map (\ x -> if mod x 2 == 0 then "?" ++ (show x) else "!" ++ (show x)) [1..k]))
     return (s, l, t)
 
 -- This generator randomly generates valid IOLTS using the createIOLTS function with randomly generated transitions.
 ltsGen :: Gen IOLTS
 ltsGen = do
-    k <- choose(2, 20)
-    n <- choose(2, k)
+    k <- choose (2, 20)
+    n <- choose (2, k)
     transitions <- vectorOf n transitionGen
     return (createIOLTS transitions)
+
+
+tracesGen :: Gen Trace
+tracesGen = do
+    head . straces <$> ltsGen
 
 
 
 main :: IO ()
 main = do
-    putStrLn "Property 1: Suspended traces must not contain quiescent states."
-    quickCheck $ forAll ltsGen $ prop_no_quiescent_states
+    putStrLn "Testing with QuickCheck"
+    quickCheck prop_straces_are_susp
+
+
+-- Define a property to check that all generated traces are suspension traces
+prop_straces_are_susp :: Property
+prop_straces_are_susp = forAll ltsGen $ \sampleIOLTS ->
+  let susTraces = straces sampleIOLTS
+  in forAll tracesGen $ \generatedTrace ->
+    generatedTrace `elem` susTraces
+
+
+
+
+{-
+
+[]
+["tau"]
+["delta"]
+["tau","tau"]
+["tau","delta"]
+["delta","tau"]
+["delta","delta"]
+["tau","tau","delta"]
+["tau","delta","tau"]
+["tau","delta","delta"]
+["delta","tau","tau"]
+["delta","tau","delta"]
+["delta","delta","tau"]
+["delta","delta","delta"]
+["tau","tau","delta","delta"]
+["tau","delta","tau","delta"]
+["tau","delta","delta","tau"]
+["tau","delta","delta","delta"]
+["delta","tau","tau","delta"]
+["delta","tau","delta","tau"]
+
+
+
+Suspension Traces:
+[]
+["5"]
+["16"]
+["6"]
+["5","2"]
+["5","tau"]
+["5","delta"]
+["16","11"]
+["6","delta"]
+["5","2","5"]
+["5","2","16"]
+["5","2","6"]
+["5","tau","delta"]
+["5","delta","2"]
+["5","delta","tau"]
+["5","delta","delta"]
+["16","11","delta"]
+["6","delta","delta"]
+["5","2","5","2"]
+["5","2","5","tau"]
+
+
+Suspension Traces:
+[]
+["1"]
+["6"]
+["1","3"]
+["1","2"]
+["6","delta"]
+["1","3","delta"]
+["1","2","1"]
+["1","2","6"]
+["6","delta","delta"]
+["1","3","delta","delta"]
+["1","2","1","3"]
+["1","2","1","2"]
+["1","2","6","delta"]
+["6","delta","delta","delta"]
+["1","3","delta","delta","delta"]
+["1","2","1","3","delta"]
+["1","2","1","2","1"]
+["1","2","1","2","6"]
+["1","2","6","delta","delta"]
+
+
+Suspension Traces:
+[]
+["1"]
+["tau"]
+["1","6"]
+["1","8"]
+["1","delta"]
+["tau","8"]
+["tau","tau"]
+["tau","delta"]
+["tau","5"]
+["1","6","1"]
+["1","6","tau"]
+["1","8","8"]
+["1","8","tau"]
+["1","8","delta"]
+["1","delta","6"]
+["1","delta","8"]
+["1","delta","delta"]
+["tau","8","delta"]
+["tau","tau","1"]
+
+
+Suspension Traces:
+[]
+["5"]
+["2"]
+["5","14"]
+["5","delta"]
+["2","6"]
+["2","tau"]
+["2","delta"]
+["2","14"]
+["5","14","5"]
+["5","14","2"]
+["5","delta","14"]
+["5","delta","delta"]
+["2","6","delta"]
+["2","tau","5"]
+["2","tau","2"]
+["2","delta","6"]
+["2","delta","tau"]
+["2","delta","delta"]
+["2","14","5"]
+
+
+-- Trace Generator --
+
+In the above we have implemented the tracesGen function - which is basically generates
+random traces for our IOLTS.
+
+The most important thing to note about the traceGen is that generates random IOLTS with
+random number of transitions and states. Afterwards, the suspension traces are calculated,
+later to take the first strace out of the staces and return that as a Gen trace.
+
+This was needed for our quickCheck tests.
+
+We verify that our staces function is ok with the prop_straces_are_susp prop.
+With this property we check that all the generated traces are inded suspension traces for
+th IOLTS with our  `straces` func.
+
+
++++ OK, passed 100 tests.
+
+forAll ltsGen $ \sampleIOLTS -> here we generate a random IOLTS with the ltsGen geerator. and store it in sampleIOLTS
+let susTraces = straces sampleIOLTS in .. in this part we calculate the suspension traces for the aforementioned samleIOLTS
+-}
