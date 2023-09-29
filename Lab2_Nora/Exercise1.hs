@@ -68,6 +68,10 @@ prop_random_valid iolts = validateLTS iolts == True
 prop_sequential_valid :: IOLTS -> Bool
 prop_sequential_valid iolts = validateLTS iolts == True
 
+-- Empty main method in case that is required for sumbission.
+main :: IO ()
+main = putStr ""
+
 
 {-
 --------- LIBRARIES ---------
