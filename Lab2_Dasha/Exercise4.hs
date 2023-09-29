@@ -8,6 +8,8 @@ module Exercise4 where
 import Data.List
 import LTS
 import Test.QuickCheck
+import Exercise2
+--import Exercise3
 
 {-
 
@@ -23,18 +25,18 @@ r after but = {r1, r2}; r after but·choc = ∅ (empty set); v after but·liq·b
 -}
 
 -- This function retrieves all s2 states in transitions (s1, label, s2).
--- This function retrieves all s2 states in transitions (s1, label, s2).
 nextStates':: [LabeledTransition] -> [State] -> Label -> [State]
 nextStates' lt state label = nub [s | (s', label, s)<- lt , elem s' state]
 
--- with every label retrive s2 states and check whether q0 is reached
-
+-- This function recurces over labels a trace to find all states reached after that label. 
+--The final output is the states reached after a whole trace.
 after' :: [LabeledTransition] -> [State] -> Trace -> [State]
 after' lt states [] = states
-after' lt states (th:tt) = after' lt (nextStates' lt states th) tt
+after' lt states (th:tt) = after' lt (nextStates' lt states th) 
 
+--This function returns the set of states reached after the given trace. 
 after :: IOLTS -> Trace -> [State]
-after (_, _, _, _, q0) [] = [q0]
+after (_, _, _, _, q0) [] = [q0] 
 after (_, _, _, lt, q0) trace = nub (after' lt [q0] trace)
 
 -------------------------TESTING------------------------------------------------------
@@ -43,12 +45,23 @@ after (_, _, _, lt, q0) trace = nub (after' lt [q0] trace)
 
 --------------------------PROPERTIES---------------------------------------------------
 
--- Property: Reachability Property
---For every state s in the result of after iolts trace,
+-- Reachability Property
+--For every state s in the result of after iolts trace (for all traces in (straces iolts),
 --there exists a trace from the initial state to s that matches the given trace.
---prop_reachability :: IOLTS -> Property
---prop_reachability iolts 
+--prop_reachability :: IOLTS -> Bool
+--prop_reachability iolts = 
 
+--Identity Property:
+--If the trace is empty, the result of after iolts []
+--should be a list containing only the initial state. 
+prop_identity :: IOLTS -> Bool
+prop_identity (q, li, lu, t, q0) = after (q, li, lu, t, q0) [] == [q0]
+
+--Consistency with Single-Step Transitions:
+--Compare the result of after with the result of applying a single labeled transition. 
+--For example, if after iolts [a] returns [s1, s2], check that there exist transitions [s0, a, s1] and [s0, a, s2] in the IOLTS.
+--prop_consistency :: IOLTS -> Bool
+--prop_consistency iolts = 
 
 -------------------------GENERATORS (from Exercise2)-----------------------------------------------------
 
@@ -60,6 +73,25 @@ after (_, _, _, lt, q0) trace = nub (after' lt [q0] trace)
 
 main :: IO ()
 main = do
-    putStrLn "Property 1: Suspended traces must not contain quiescent states."
-    --quickCheck $ forAll ltsGen $ prop_no_quiescent_states
+    putStrLn "Reachability Property"
+    --quickCheck $ forAll ltsGen $ prop_reachability
+    putStrLn "Identity Property"
+    quickCheck $ forAll ltsGen $ prop_identity
+    putStrLn "Consistency Property"
+    --quickCheck $ forAll ltsGen $ prop_consistency
     
+{-
+--------- LIBRARIES ---------
+
+In this program, the following libraries are used:
+
+- Data.List: To perform list-specific actions lilke intersect.
+- LTS: To be able to use the IOLTS and related types and functions.
+
+--------- CODE DESCRIPTION (PURPOSE, FEATURES, ARCHITECTURE) ---------
+
+
+--------- TESTING APPROACH ---------
+
+-- ghci> quickCheck  prop_identity                 
+-- +++ OK, passed 100 tests.
