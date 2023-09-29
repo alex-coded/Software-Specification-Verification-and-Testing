@@ -32,7 +32,7 @@ straces' (qh:qt, li, lu, t, q0) | isQuiescent (nextTransitions' t qh) lu = strac
 -- BY using the traces' function defined in LTS.hs, we retieve all traces of the given IOLTS
 -- based on the updated transitions including suspension transitions.
 straces :: IOLTS -> [Trace]
-straces (q, li, lu, t, q0) = map snd (traces' (straces' (q, li, lu, t, q0)) [([q0],[])])
+straces (q, li, lu, t, q0) = map snd (traces' (straces' (q, li, lu ++ [delta], t, q0)) [([q0],[])])
 
 
 -- TESTING PART --
