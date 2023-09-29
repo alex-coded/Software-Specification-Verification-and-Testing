@@ -204,9 +204,13 @@ later to take the first strace out of the staces and return that as a Gen trace.
 
 This was needed for our quickCheck tests. 
 
-We verify that our staces function is ok with the prop_straces_are_susp proper.
+We verify that our staces function is ok with the prop_straces_are_susp prop. 
+With this property we check that all the generated traces are inded suspension traces for
+th IOLTS with our  `straces` func. 
 
 
 +++ OK, passed 100 tests.
 
+forAll ltsGen $ \sampleIOLTS -> here we generate a random IOLTS with the ltsGen geerator. and store it in sampleIOLTS
+let susTraces = straces sampleIOLTS in .. in this part we calculate the suspension traces for the aforementioned samleIOLTS
 -}
