@@ -22,21 +22,44 @@ r after but = {r1, r2}; r after but·choc = ∅ (empty set); v after but·liq·b
 
 -}
 
---function i wrote
---Implements the function after (infix) for IOLTS corresponding with the definition in the Tretmans paper. 
-after :: State -> Trace -> Maybe [State] --can be called using infix notation.
-after state [] = Just [state] --state reached after epsilon (nothing).
-after state (label:traces)  = --traversing the trace.
-        case transition state label of
-        Just nextState -> after nextState traces
-        Nothing -> Nothing
+-- This function retrieves all s2 states in transitions (s1, label, s2).
+-- This function retrieves all s2 states in transitions (s1, label, s2).
+nextStates':: [LabeledTransition] -> [State] -> Label -> [State]
+nextStates' lt state label = nub [s | (s', label, s)<- lt , elem s' state]
 
---function i was trynna figure out
--- Perform a transition in the IOLTS
-transition :: State -> Label -> Maybe State
-transition state label = Just state
+-- with every label retrive s2 states and check whether q0 is reached
 
---Their specification
+after' :: [LabeledTransition] -> [State] -> Trace -> [State]
+after' lt states [] = states
+after' lt states (th:tt) = after' lt (nextStates' lt states th) tt
+
 after :: IOLTS -> Trace -> [State]
+after (_, _, _, _, q0) [] = [q0]
+after (_, _, _, lt, q0) trace = nub (after' lt [q0] trace)
 
--------------------TESTS-----------------------------------------
+-------------------------TESTING------------------------------------------------------
+
+--Create tests to test the validity of your implementation with both traces and straces.
+
+--------------------------PROPERTIES---------------------------------------------------
+
+-- Property: Reachability Property
+--For every state s in the result of after iolts trace,
+--there exists a trace from the initial state to s that matches the given trace.
+--prop_reachability :: IOLTS -> Property
+--prop_reachability iolts 
+
+
+-------------------------GENERATORS (from Exercise2)-----------------------------------------------------
+
+-- This generator randomly generates transitions of the form (State, Label, State).
+--transitionGen :: Gen LabeledTransition
+
+-- This generator randomly generates valid IOLTS using the createIOLTS function with randomly generated transitions.
+--ltsGen :: Gen IOLTS
+
+main :: IO ()
+main = do
+    putStrLn "Property 1: Suspended traces must not contain quiescent states."
+    --quickCheck $ forAll ltsGen $ prop_no_quiescent_states
+    
