@@ -76,7 +76,8 @@ main = do
     putStrLn "Reachability Property"
     --quickCheck $ forAll ltsGen $ prop_reachability
     putStrLn "Identity Property"
-    quickCheck $ forAll ltsGen $ prop_identity
+    --quickCheck $ forAll ltsGen $ prop_identity
+    quickCheck prop_identity
     putStrLn "Consistency Property"
     --quickCheck $ forAll ltsGen $ prop_consistency
     
