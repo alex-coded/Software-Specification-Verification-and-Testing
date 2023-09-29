@@ -15,8 +15,8 @@ import Test.QuickCheck
 isQuiescent :: [(State, Label)] -> [Label] -> Bool
 isQuiescent nt lu = not (any (\lable -> elem lable (map snd nt)) lu)
 
--- This function finds suspension traces, adds these traces as transitions in the IOLTS and
--- returns the resulting transition list.
+-- This function finds suspension transitions, adds these transitions in the list of transitions stored in
+-- IOLTS and returns the resulting transition list.
 -- This function checks every state stored in the IOLTS whether the state is a quiescent,
 -- if a state is a quiescent, a transition with delta label will be added to the list of
 -- transitions with the quiescent being the input and the output state.
@@ -26,5 +26,6 @@ straces' ((qh:qt), li, lu, t, q0) | isQuiescent (nextTransitions' t qh) lu = str
                                   | otherwise = straces' (qt, li, lu, t, q0)
 
 -- This function returns all suspension traces of a given IOLTS.
+--
 straces :: IOLTS -> [Trace]
 straces (q, li, lu, t, q0) = map snd (traces' (straces' (q, li, lu, t, q0)) [([q0],[])])
