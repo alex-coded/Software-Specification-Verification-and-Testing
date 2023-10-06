@@ -49,6 +49,25 @@ percentage of killed mutants.
 
 --------- IMPORTANCE OF STRENGTH ---------
 
-...
+The strength of a set of properties is important information, because this tells us something about the
+conjectures that this property set might be involved in. We know that conjectures are not very likely to
+hold when the killed percentage is either 0 or 100. This makes sense, since this is clearly not a very
+specific percentage, any mutator that coincidentally does not affect two aspects of the output that two
+properties are testing, will result in a conjecture when this might just be a coincidence. For example,
+when looking at the output from the countSurvivors function from Exercise2, when using the shuffleList
+mutator, the percentage of survivors for both the prop_tenElements and the prop_moduloIsZero properties
+is 100% (so 0% killed for both). However, these two properties do not imply one another. This result is
+just a result of the shuffleList mutator not altering the length and the elements themselves. The same
+logic goes for two properties with 100% killed mutants. So the strength of the conjectures in these cases
+is not high. It is logical to assume that a conjecture is the strongest when the killed percentage is exactly
+in between 0% and 100%, so 50%. The FitSpec paper proposes the following conjecture strength labels on a
+scale of killed percentage:
+
+  Weak      Mild           Strong           Mild      Weak
+|------|------------|------------------|------------|------|
+0%    11%          33%                66%          88%    100%
+
+It is important to know what conjectures are likely to hold, in order to construct the most minimal and
+complete set of properties that describes the function under testing.
 
 -}
