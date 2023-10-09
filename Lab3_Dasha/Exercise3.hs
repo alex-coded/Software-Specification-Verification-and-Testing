@@ -14,15 +14,21 @@ import Mutation
 --import FitSpec
 import MultiplicationTable
 import Debug.Trace
+import Exercise2
+import Control.Monad
 
 --Implement a function that calculates the minimal property subsets, given a 'function under
 --test' and a set of properties.
+--minPropSubset :: ([Integer] -> Gen [Integer]) -> (Integer -> [Integer]) -> [([Integer] -> Integer -> Bool)] -> IO [([Integer] -> Integer -> Bool)]
+--minPropSubset mutator fut propList = 
 
-MPS :: -> (Integer -> [Integer]) -> [([Integer] -> Integer -> Bool)] -> [([Integer] -> Integer -> Bool)]
-MPS fut properties = 
-    --countSurvivors () = 
+--CREATES A PROPERTY SUBSET WITHOUT PROPERTIES THAT KILL NO MUTANTS
+filterPropSubset :: ([Integer] -> Gen [Integer]) -> (Integer -> [Integer]) -> [([Integer] -> Integer -> Bool)] -> IO [([Integer] -> Integer -> Bool)]
+filterPropSubset mutator fut propList = filterM (\x -> do
+                count <- countSurvivors 4000 [x] fut mutator
+                return (count /= 4000)) propList
+
 {-
-
 If a property kills no mutant, or it kills the same mutants as another property, it can be
 considered redundant over other properties.
 
@@ -38,7 +44,7 @@ return the minimal set of properties
 
 -}
 
---GEORGIA - REWRITE THE MUTATE FUNCTION TO INCLUDE TWO PROPERTIES
+--REWRITE THE MUTATE FUNCTION TO INCLUDE TWO PROPERTIES
 --Applies a mutator to TWO PROPERTIES and function under test, then returns TRUE IF THE PROPERTIES KILL THE SAME MUTANT
 mutate'' :: Eq a => (a -> Gen a) -> (a -> Integer -> Bool) -> (a -> Integer -> Bool) -> (Integer -> a) -> Integer -> Gen Bool
 mutate'' mutator prop1 prop2 fut input = mutation >>= \mutant -> propertyExecutor'' prop1 prop2 mutant input
@@ -49,9 +55,10 @@ mutate'' mutator prop1 prop2 fut input = mutation >>= \mutant -> propertyExecuto
 propertyExecutor'' :: Eq a => (a -> Integer -> Bool) -> (a -> Integer -> Bool) -> a -> Integer -> Gen Bool
 propertyExecutor'' prop1 prop2 mutant x = pure (prop1 mutant x == prop2 mutant x)
 
-main :: IO()
+main :: IO [([Integer] -> Integer -> Bool)]
 main = do
-    putStrLn "Testing yourGenFunction with parameter:"
-    results <- generate (mutate'' addElements prop_tenElements prop_firstElementIsInput multiplicationTable 3)
-    print(results)
+    --results <- generate (mutate'' addElements prop_tenElements prop_firstElementIsInput multiplicationTable 3)
+    results <- minPropSubset addElements multiplicationTable multiplicationTableProps
+    putStrLn "Results:"
+    return results
 

@@ -13,20 +13,58 @@ import Test.QuickCheck
 import Mutation
 import FitSpec
 import Debug.Trace
+import MultiplicationTable
 
---This function counts the number of survivors.
-countSurvivors :: Integer -> [([Integer] -> Integer -> Property)] -> (Integer -> [Integer]) -> Integer
-countSurvivors nMutants listofProperties funct =
---first arg is number of mutants
---second arg is list of properties
---third arg is the function under test
+-- This function counts the number of surviving mutants by using vectorOf to repeat the mutate function n times.
+countSurvivors :: Int -> [([Integer] -> Integer -> Bool)] -> (Integer -> [Integer]) -> ([Integer] -> Gen [Integer]) -> IO Int
+countSurvivors n prop fun mutator = do
+            results <- generate (vectorOf n (mutate' mutator prop fun 3))
+            passed <- return (filter (\ x -> (all (\y -> y == True) x) && (x /= [])) results)
+            return (length passed)
 
+-- This function counts the number of surviving mutants by using recursion to repeat the mutate function n times.
+countSurvivors' :: Int -> [([Integer] -> Integer -> Bool)] -> (Integer -> [Integer]) -> ([Integer] -> Gen [Integer]) -> IO Int
+countSurvivors' n prop fun mutator = do
+            results <- generate (mutate' mutator prop fun 3)
+            passed <- if results /= [] then return (all (\ x -> x == True) results) else return (False)
+            if n /= 0
+            then do
+                res <- countSurvivors (n - 1) prop fun mutator
+                if passed == True
+                then return (1+res)
+                else return res
+            else
+                if passed == True
+                then return 1
+                else return 0
 
+-- Shuffles list
+shuffleList :: [Integer] -> Gen [Integer]
+shuffleList xs = shuffle xs
+
+-- Takes a random sublist of the output list.
+subList :: [Integer] -> Gen [Integer]
+subList xs = suchThat (sublistOf xs) (/= [])
+
+-- Increments elements in list by 1.
+incrementList :: [Integer] -> Gen [Integer]
+incrementList xs = return (map (\x -> x + 1) xs)
+
+-- Decrements elements in list by 1, if element is not 0.
+decrementList :: [Integer] -> Gen [Integer]
+decrementList xs = return (map (\x -> if x /= 0 then (x - 1) else x) xs)
+
+-- Returns a list of a repeating random element, of a random length.
+sameElements :: [Integer] -> Gen [Integer]
+sameElements xs = do
+             n <- choose(1, 20)
+             m <- chooseInteger(1, 10)
+             vectorOf n (elements [m])
+
+customMutators = [shuffleList, subList, incrementList, decrementList, sameElements]
 {-
 
-1. Consider the relation between properties and survivors.
-
--}
+1. Consider the relation between properties and survivors
 
 
 Haskell has a helper module Debug.Trace, this can be used to output monadic values to the terminal easily.
@@ -48,3 +86,4 @@ result = --mutation function output
 --To apply mutate 
 --mutator = mutators
 
+-}
