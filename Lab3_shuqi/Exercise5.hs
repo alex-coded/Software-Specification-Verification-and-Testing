@@ -23,6 +23,10 @@ testMutants mutator m p t = zip ([1..(length p)]) (mapM (\prob-> take m (repeat 
                     -- return mapM (\mt-> mutate' mutator p t mt) [1..m]
                     -- return (zip prop (transpose result))
 
+genToBool :: [Gen [Bool]] -> [Bool]
+genToBool input = [y | x <- (sequence input), y <- (concat x)]
+-- genToBool input = concat input
+
 -- This function returns True is both given arguments evaluates to True and False otherwise.
 andGate :: Bool -> Bool -> Bool
 andGate b1 b2 | (b1 == True) && (b2 == True) = True
@@ -37,7 +41,10 @@ testSubsets :: ([Integer] -> Gen [Integer]) -> Integer -> [([Integer] -> Integer
 testSubsets mutator m p t = do
                     subsets <- tail (subsequences [1..(length p)])
                     truthTable <- testMutants mutator m p t
-                    subsetsTable <- [lts | (prop, lts) <-  [n | n <- subsets]]
+                    subsetsTable <- [lts | (prop, lts) <- truthTable]
+                    
+
+                    
 -- sortEquivalent :: [[Int], [Bool]] -> [([[Int]],[Bool])]
 -- mapM
 -- sequence
