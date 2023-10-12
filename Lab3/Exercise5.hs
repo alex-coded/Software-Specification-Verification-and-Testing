@@ -1,6 +1,6 @@
 -- Study: MSc Software Engineering.
 -- This program is intended to
--- Time spent: 12 hours
+-- Time spent: 20 hours
 
 module Exercise5 where
 
@@ -18,7 +18,9 @@ import Test.QuickCheck
 
 
 -- This function tests m mutants against all properties p in m times.
--- Results of this test would be m x p boolean values stored in [Int, [Bool]]
+-- Results of this test would be m x p boolehbbbbbbbbbbbb\
+
+\an values stored in [Int, [Bool]]
 -- --> Int is the property number and [Gen [Bool]] the m times test outcome of the corresponding property.
 testMutants :: ([Integer] -> Gen [Integer]) -> Int -> [([Integer] -> Integer -> Bool)] -> (Integer -> [Integer]) -> [(Int, [Gen [Bool]])]
 testMutants mutator m p t = zip ([1..(length p)]) (mapM (\prob-> take m (repeat (mutate' mutator prob t 5))) [p])
@@ -64,3 +66,4 @@ testSubsets mutator m p t = do
 -- Result of above -- [([[Int]],[Bool])], where each [[Int]] is an equivalence class of property subsets.
 -- Step 5: Two property sets are apparently equivalent if the property sets kill the same mutants.
 -- Step 6: A set of properties apparently implies another set if whenever a mutant survives testing against the first set it also survives testing against the second.
+-- Unfortunately, we couldn't finish our approach since we didn't succeed in analysing Gen lists.
