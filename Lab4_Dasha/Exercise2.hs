@@ -1,6 +1,6 @@
 -- Study: MSc Software Engineering.
 -- This program is intended to 
--- Time spent: 30 min
+-- Time spent: 2 hours
 
 module Exercise2 where
 
@@ -9,6 +9,7 @@ import Data.List
 import System.Random
 import Test.QuickCheck
 import SetOrd
+import Exercise1
 
 --Operation for set intersection
 setIntersection :: Ord a => Set a -> Set a -> Set a
@@ -25,37 +26,45 @@ setUnion (Set (x:xs)) set2  =
 
 --Operation for set difference
 setDifference :: Ord a => Set a -> Set a -> Set a
-setDifference (Set [])     set2  =  set2
-setDifference set1     (Set [])  =  set1
-setDifference (Set (x:xs)) (Set(y:ys))
-   | (inSet x (Set(y:ys)))  = setDifference (Set xs) (Set ys)
-   | (inSet y (Set(x:xs))) = setDifference (Set xs) (Set ys)
-   | not ((inSet x (Set(y:ys)))) = insertSet x (setDifference (Set xs) (Set (y:ys)))
-   | not ((inSet y (Set(x:xs)))) = insertSet y (setDifference (Set (x:xs)) (Set ys))
+setDifference (Set [])     set2  =  emptySet
+setDifference (Set (x:xs)) set2
+   | (inSet x set2) = setDifference (Set xs) set2
+   | otherwise = insertSet x (setDifference (Set xs) set2)
 
-prop_intersection :: Set Int -> Set Int -> Bool
+--Intersection Properties
+
+--All elements of intersection are in set1 and set2. 
+prop_intersection :: Set Int -> Set Int -> Property
 prop_intersection set1 set2 =
-    let result = setIntersection set1 set2
-    in all (\x -> inSet x result) set1 && all (\x -> inSet x result) set2
+  let intersection = setIntersection set1 set2
+  in counterexample ("set1: " ++ show set1 ++ "\nset2: " ++ show set2 ++ "\nintersection: " ++ show intersection) $
+    property $ subSet intersection set1 && subSet intersection set2
 
-prop_union :: Set Int -> Set Int -> Bool
+--Union Properties
+
+--All elements of set1 and set2 are in union.
+prop_union :: Set Int -> Set Int -> Property
 prop_union set1 set2 =
-    let result = setUnion set1 set2
-    in all (\x -> inSet x result) set1 && all (\x -> inSet x result) set2
+  let union = setUnion set1 set2
+  in counterexample ("set1: " ++ show set1 ++ "\nset2: " ++ show set2 ++ "\nunion: " ++ show union) $
+    property $ subSet set1 union && subSet set2 union
 
-prop_difference :: Set Int -> Set Int -> Bool
+--Difference Properties
+
+--Complement Property
+--A-(A-B)=A∩B -> The set difference of A with the set difference of A and B is equivalent to the intersection of A and B.
+prop_difference :: Set Int -> Set Int -> Property
 prop_difference set1 set2 =
-    let result = setDifference set1 set2
-    in (all (\x -> inSet x result) set1 && all (\x -> not (inSet x result)) set2) 
-    && (all (\y -> not (inSet y result)) set1 && all (\y -> inSet y result) set2)
+  let difference = setDifference set1 set2
+      intersection = setIntersection set1 set2
+  in counterexample ("set1: " ++ show set1 ++ "\nset2: " ++ show set2 ++ "\ndifference: " ++ show difference) $
+          property $ (set2list difference) == (\\) (set2list set1) (set2list intersection)
 
-
-main :: IO()
+main :: IO ()
 main = do
     quickCheck prop_intersection
     quickCheck prop_union
     quickCheck prop_difference
-
 
 
 
