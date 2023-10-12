@@ -11,7 +11,7 @@ type Rel a = [(a, a)]
 symClos :: Ord a => Rel a -> Rel a
 symClos pairs = union pairs [(y, x) | (x, y) <- pairs]
 
--- Print transitive closure of a relation of which the transitive closure is known.
+-- Print symmetric closure of a relation of which the symmetric closure is known.
 main :: IO ()
 main = do
     let relation = [(1, 2), (2, 3), (3, 4)]
