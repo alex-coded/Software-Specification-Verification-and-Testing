@@ -36,12 +36,10 @@ instance Arbitrary Form where
     arbitrary = sized genForm
         where
             genForm 0 = do
-                n <- arbitrary
-                return (Prop n)
+                Prop <$> arbitrary
             genForm n = oneof [
                 do
-                    n <- arbitrary
-                    return (Prop n),
+                    Prop <$> arbitrary,
                 Neg <$> subForm,
                 Cnj <$> vectorOf 2 subForm,
                 Dsj <$> vectorOf 2 subForm,

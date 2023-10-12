@@ -9,7 +9,7 @@ type Rel a = [(a, a)]
 
 -- Symmetric closure
 symClos :: Ord a => Rel a -> Rel a
-symClos pairs = union pairs [(y, x) | (x, y) <- pairs]
+symClos pairs = pairs `union` ([(y, x) | (x, y) <- pairs])
 
 -- Print symmetric closure of a relation of which the symmetric closure is known.
 main :: IO ()
