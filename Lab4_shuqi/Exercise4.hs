@@ -4,7 +4,7 @@
 
 module Exercise4 where
 
-import SetOrd
+import SetOrd ( inSet, list2set, Set(..) )
 
 type Rel a = Set (a, a)
 
