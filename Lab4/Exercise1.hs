@@ -1,6 +1,6 @@
 -- Study: MSc Software Engineering.
 -- This program is intended to showcase two generators that generate data type Set Int
--- Time spent: 2 hours
+-- Time spent: 1 hour
 
 module Exercise1 where
 
