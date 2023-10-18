@@ -1,6 +1,6 @@
 -- Study: MSc Software Engineering.
 -- This program is intended to find the sum of the first 50 reversible prime squares https://projecteuler.net/problem=808
--- Time spent: 3 hours
+-- Time spent: 5 hours
 
 
 module Euler808 where
