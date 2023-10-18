@@ -7,7 +7,6 @@ module Exercise4 where
 import SetOrd
 import Data.List(nub)
 import Test.QuickCheck
-import qualified GHC.TypeLits as isSerial
 
 type Rel a = [(a, a)]
 

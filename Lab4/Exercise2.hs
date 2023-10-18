@@ -8,7 +8,17 @@ module Exercise2 where
 import Test.QuickCheck
 import SetOrd
 import Data.List
-import Exercise1
+import System.Random
+import Control.Monad
+
+getRandomSet :: Int -> Int -> Int -> IO (Set Int)
+getRandomSet min max n = do
+    list <- replicateM n $ randomRIO (min, max)
+    return $ list2set list
+
+genQuickCheck :: Gen (Set Int)
+genQuickCheck = do
+    list2set <$> arbitrary
 
 --Operation for set intersection
 setIntersection :: Ord a => Set a -> Set a -> Set a
@@ -83,6 +93,7 @@ This program uses the following libraries:
 - SetOrd: For the Set datatype and its relevant functions. 
 - Exercise 1: Access to our own generator. 
 - Data.List: To be able to use the (//) double backslash list difference operator.
+- System.Random and Control.Monad are from the previous exercise
 
 --------- CODE DESCRIPTION (PURPOSE, FEATURES, ARCHITECTURE) ---------
 
