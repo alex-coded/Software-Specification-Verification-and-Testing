@@ -30,6 +30,8 @@ setDifference (Set (x:xs)) set2
    | (inSet x set2) = setDifference (Set xs) set2
    | otherwise = insertSet x (setDifference (Set xs) set2)
 
+------------PROPERTIES----------------
+
 --Intersection Properties
 
 --All elements of intersection are in set1 and set2 -> intersection is a subset of set1 and set2. 
@@ -50,6 +52,10 @@ prop_union set1 set2 =
 
 --Difference Properties
 
+--Auxiliary function to convert a set to a list.
+set2list :: Ord a => Set a -> [a]
+set2list (Set xs) = xs
+
 --Complement Property
 --A-(A-B)=A∩B -> The set difference of A with the set difference of A and B is equivalent to the intersection of A and B.
 prop_difference :: Set Int -> Set Int -> Property
@@ -58,6 +64,10 @@ prop_difference set1 set2 =
       intersection = setIntersection set1 set2
   in counterexample ("set1: " ++ show set1 ++ "\nset2: " ++ show set2 ++ "\ndifference: " ++ show difference) $
           property $ (set2list difference) == (\\) (set2list set1) (set2list intersection)
+
+-- Define an Arbitrary instance for Set Int - uses generator from Exercise 1
+instance Arbitrary (Set Int) where
+  arbitrary = genQuickCheck
 
 main :: IO ()
 main = do
@@ -77,13 +87,16 @@ This program uses the following libraries:
 --------- CODE DESCRIPTION (PURPOSE, FEATURES, ARCHITECTURE) ---------
 
 This program is intended to implement operations for set intersection, set union and set difference.
-First, I extract the implementation for set union directly from SetOrd (copy it rather than import for visual aid).
+First, we took the implementation for set union directly from SetOrd (copy it rather than import for visual aid).
+We have then implemented intersection and difference in the same way as union - recursively. 
+For intersection, We check if the head of first set is in second set. If it is, we insert it into the final set
+and recurse for the tail of first set. For difference, we do the opposite. 
 
 --------- TEST APPROACH ---------
 
 To test the implementation of the set operators, we use automatic testing on a number of different
-properties. All properties are of type Bool, since they all use generators to generate relevant test
-cases. We first tested using our own generator from Exercise1, then QuickCheck. 
+properties, all of type Property. We tested using an Arbitrary instance for Set Int
+which is implemented using our QuickCheck data generator. 
 
 The following properties were checked:
 
@@ -94,21 +107,18 @@ This seemed intuitive to test upon seeing the subset function in SetOrd.
 
 --Union Properties
 
-1. All elements of set1 and set2 are in union - set1 and set2 are a subset of union. 
+2. All elements of set1 and set2 are in union - set1 and set2 are a subset of union. 
 Same as above. 
 
 --Difference Properties
 
-1. Complement Property -> A-(A-B)=A∩B
+3. Complement Property -> A-(A-B)=A∩B
 The set difference of A with the set difference of A and B is equivalent to the intersection of A and B.
 
-Each property needs its own generator to generate relevant testcases, see Exercise1.hs for the
-explanation of all the generators.
+We believe this is a sufficiently strong set of properties. These properties need a generator to 
+generate relevant testcases, see Exercise1.hs for the explanation of our generator.  
 
 As expected, all tests passed, giving the following output:
-+++ OK, passed 100 tests.
-+++ OK, passed 100 tests.
-+++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
