@@ -4,7 +4,6 @@ import Data.List
 type Rel a = Set (a, a)
 
 -- Symmetric closure
-96618c646c2ead409b01
 symClos :: Ord a => Rel a -> Rel a
 symClos (Set pairs) = Set (nub(pairs ++ [(y, x) | (x, y) <- pairs]))
 

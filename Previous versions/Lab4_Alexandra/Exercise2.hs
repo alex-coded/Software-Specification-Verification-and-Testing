@@ -6,7 +6,6 @@ import Data.List
 import SetOrd
 
 
-
 setIntersection :: Ord a => Set a -> Set a -> Set a
 setIntersection (Set xs) (Set ys) = Set [x | x <- xs, contains x ys]
 
